@@ -11,8 +11,9 @@ return new class extends Migration
         Schema::create('pos_users', function (Blueprint $table) {
             $table->id();
             $table->string('username')->unique();
-            $table->string('role');
-            $table->string('status');
+            $table->string('full_name');
+            $table->string('email')->unique();
+            $table->string('password');
             $table->timestamps();
         });
     }

@@ -9,7 +9,7 @@
     <nav>
         <a href="{{ route('home') }}">Home</a> |
         <a href="{{ route('about') }}">About</a> |
-        <a href="{{ route('customers') }}">Customer Accounts</a> |
+        <a href="{{ route('customers') }}">Customers</a> |
         <a href="{{ route('users') }}">User Accounts</a>
     </nav>
     <hr>
@@ -19,17 +19,17 @@
             <tr>
                 <th>ID</th>
                 <th>Username</th>
-                <th>Role</th>
-                <th>Status</th>
+                <th>Full Name</th>
+                <th>Email</th>
             </tr>
         </thead>
         <tbody>
             @foreach ($users as $user)
                 <tr>
-                    <td>{{ $user['id'] }}</td>
-                    <td>{{ $user['username'] }}</td>
-                    <td>{{ $user['role'] }}</td>
-                    <td>{{ $user['status'] }}</td>
+                    <td>{{ $user->id }}</td>
+                    <td>{{ $user->username }}</td>
+                    <td>{{ $user->full_name }}</td>
+                    <td>{{ $user->email }}</td>
                 </tr>
             @endforeach
         </tbody>

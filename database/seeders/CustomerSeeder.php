@@ -2,19 +2,49 @@
 
 namespace Database\Seeders;
 
+use App\Models\Customer;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
 
 class CustomerSeeder extends Seeder
 {
     public function run(): void
     {
-        DB::table('customers')->insert([
-            ['id' => 1, 'name' => 'Juan Dela Cruz', 'email' => 'juan@example.com', 'contact' => '09171234567'],
-            ['id' => 2, 'name' => 'Maria Santos', 'email' => 'maria@example.com', 'contact' => '09182345678'],
-            ['id' => 3, 'name' => 'Pedro Penduko', 'email' => 'pedro@example.com', 'contact' => '09193456789'],
-            ['id' => 4, 'name' => 'Ana Reyes', 'email' => 'ana@example.com', 'contact' => '09204567890'],
-            ['id' => 5, 'name' => 'Mark Dizon', 'email' => 'mark@example.com', 'contact' => '09215678901'],
-        ]);
+        $customers = [
+            [
+                'full_name' => 'Juan Dela Cruz',
+                'email' => 'juan.delacruz@example.com',
+                'phone' => '09171234567',
+            ],
+            [
+                'full_name' => 'Maria Santos',
+                'email' => 'maria.santos@example.com',
+                'phone' => '09189876543',
+            ],
+            [
+                'full_name' => 'Jose Rizal',
+                'email' => 'jose.rizal@example.com',
+                'phone' => '09201112233',
+            ],
+            [
+                'full_name' => 'Clara Reyes',
+                'email' => 'clara.reyes@example.com',
+                'phone' => '09214445566',
+            ],
+            [
+                'full_name' => 'Andres Bonifacio',
+                'email' => 'andres.bonifacio@example.com',
+                'phone' => '09227778899',
+            ],
+        ];
+
+        foreach ($customers as $customer) {
+            Customer::updateOrCreate(
+                ['email' => $customer['email']],
+                [
+                    'full_name' => $customer['full_name'],
+                    'phone' => $customer['phone'],
+                ]
+            );
+        }
     }
 }
