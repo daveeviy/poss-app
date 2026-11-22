@@ -1,28 +1,21 @@
-FROM php:8.2-apache
+FROM php:8.2-cli
 
 RUN apt-get update && apt-get install -y \
     git \
     unzip \
-    libzip-dev \
-    libonig-dev \
-    libxml2-dev \
     libsqlite3-dev \
-    && docker-php-ext-install pdo pdo_mysql pdo_sqlite mbstring zip exif pcntl bcmath \
-    && a2enmod rewrite \
+    libpng-dev \
+    libjpeg62-turbo-dev \
+    libwebp-dev \
+    && docker-php-ext-configure gd --with-jpeg --with-webp \
+    && docker-php-ext-install pdo_sqlite gd \
     && rm -rf /var/lib/apt/lists/*
-
-ENV APACHE_DOCUMENT_ROOT=/var/www/html/public
-RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf \
-    && sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
 
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
-WORKDIR /var/www/html
+WORKDIR /app
 COPY . .
 
-RUN composer install --no-dev --optimize-autoloader --no-interaction \
-    && mkdir -p storage/framework/{sessions,views,cache} storage/logs bootstrap/cache \
-    && chown -R www-data:www-data /var/www/html \
-    && chmod -R 775 storage bootstrap/cache
+RUN composer install --no-dev --optimize-autoloader
 
-CMD ["sh", "-c", "PORT_NUM=${PORT:-80}; printf 'Listen %s\n' \"$PORT_NUM\" > /etc/apache2/ports.conf && sed -ri \"s/<VirtualHost \\*:([0-9]+)>/<VirtualHost *:$PORT_NUM>/g\" /etc/apache2/sites-available/000-default.conf && mkdir -p storage/framework/{sessions,views,cache} storage/logs bootstrap/cache && touch /tmp/database.sqlite storage/logs/laravel.log && chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache /tmp/database.sqlite && chmod 777 /tmp && chmod 666 /tmp/database.sqlite && chmod -R 775 storage bootstrap/cache && php artisan config:clear && php artisan migrate --force && (php artisan db:seed --force || true) && apache2-foreground"]
+CMD sh -c "touch /tmp/database.sqlite && php artisan storage:link --force && php artisan config:cache && php artisan route:cache && php artisan view:cache && php artisan migrate --force && php artisan serve --host=0.0.0.0 --port=${PORT:-8000}"

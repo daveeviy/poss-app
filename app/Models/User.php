@@ -13,5 +13,6 @@ class User extends Model
         'full_name',
         'email',
         'password',
+        'avatar',
     ];
 }
