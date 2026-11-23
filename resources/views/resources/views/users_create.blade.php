@@ -7,7 +7,7 @@
 </head>
 <body>
     <h1>Create User</h1>
-    <a href="{{ route('users') }}">Back to Users</a>
+    <a href="{{ route('users.index') }}">Back to Users</a>
 
     @if ($errors->any())
         <ul>

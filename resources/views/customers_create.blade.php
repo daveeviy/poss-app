@@ -7,7 +7,7 @@
 </head>
 <body>
     <h1>Create Customer</h1>
-    <a href="{{ route('customers') }}">Back to Customers</a>
+    <a href="{{ route('customers.index') }}">Back to Customers</a>
 
     @if ($errors->any())
         <ul>

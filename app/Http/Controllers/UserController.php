@@ -29,13 +29,31 @@ class UserController extends Controller
             'full_name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'max:255', Rule::unique('pos_users', 'email')],
             'password' => ['required', 'string', 'min:6'],
+            'avatar' => ['nullable', 'image', 'max:2048'],
         ]);
 
         $validated['password'] = Hash::make($validated['password']);
 
+        if ($request->hasFile('avatar')) {
+            $file = $request->file('avatar');
+            $filename = 'avatars/' . uniqid('avatar_', true) . '.jpg';
+
+            $preparedImage = Image::read($file->getRealPath())
+                ->cover(200, 200)
+                ->toJpeg(85);
+
+            Storage::disk('public')->put($filename, (string) $preparedImage);
+            $validated['avatar'] = $filename;
+        }
+
         User::create($validated);
 
-        return redirect()->route('users')->with('success', 'User created successfully.');
+        return redirect()->route('users.index')->with('success', 'User created successfully.');
+    }
+
+    public function show(User $user)
+    {
+        return redirect()->route('users.edit', $user->id);
     }
 
     public function edit(User $user)
@@ -79,6 +97,17 @@ class UserController extends Controller
 
         $user->update($validated);
 
-        return redirect()->route('users')->with('success', 'User updated successfully.');
+        return redirect()->route('users.index')->with('success', 'User updated successfully.');
+    }
+
+    public function destroy(User $user)
+    {
+        if ($user->avatar && Storage::disk('public')->exists($user->avatar)) {
+            Storage::disk('public')->delete($user->avatar);
+        }
+
+        $user->delete();
+
+        return redirect()->route('users.index')->with('success', 'User deleted successfully.');
     }
 }
